@@ -5,8 +5,8 @@ const router = express.Router();
 expressWs(router);
 
 router.ws('/', (ws, req) => {
-  ws.on('message', (msg) => {
-    console.log(msg);
+  ws.on('close', (msg) => {
+    console.log("close");
   });
 });
 

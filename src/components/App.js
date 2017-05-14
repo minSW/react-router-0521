@@ -4,10 +4,26 @@ class App extends Component {
   constructor() {
     super();
     this.state = {
-      ws: new WebSocket('ws://localhost/ws/A')
+    ws: new WebSocket('ws://125.130.66.85:3200/ws/chat'),
+    text: "",
+    chatBox: ""
     }
   }
+  handleChange(e){
+    this.setState({
+    text: e.target.value
+    })
+  }
+  handleSubmit(e){
+    e.preventDefault();
+    let {ws, text} = this.state;
+    ws.send(text);
+    this.setState({text: ''});
+  }
   handleData(data) {
+    let chatBox = this.state.chatBox;
+    chatBox = chatBox +  '\n' + data;
+    this.setState({chatBox});
     console.log(data);
   }
   setupWebsocket() {
@@ -15,8 +31,8 @@ class App extends Component {
     ws.onopen = () => {
       console.log('Websocket connected');
     };
-    ws.onmessage = (evt) => {
-      this.handleData(evt.data);
+    ws.onmessage = (e) => {
+      this.handleData(e.data);
     };
     ws.onclose = () => {
       console.log('Websocket disconnected');
@@ -38,6 +54,19 @@ class App extends Component {
   render(){
     return (
       <div>
+        <div className="chatBox">
+          {this.state.chatBox.split('\n').map((line) => {
+            return (
+              <span>
+                {line}<br/>
+              </span>
+            )
+          })}
+        </div>
+       <form onSubmit={(e) => this.handleSubmit(e)}>
+         <input type="text" onChange={(e) => this.handleChange(e)} value={this.state.text}/>
+         <input type="submit" value="Enter" />
+      </form>
         <h1>Hello World</h1>
         <h3>Node.js express express-ws React, Webpack with ES6</h3>
       </div>
